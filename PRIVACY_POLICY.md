@@ -18,24 +18,25 @@ you interact with is responsible for honoring it.
 ## 1. What Resonode does
 
 When invited to a server and instructed to join a voice channel (via the
-`!join` command), Resonode records the voice session and produces a
-speaker-attributed, timestamped text transcript. It also responds to text
-commands such as `!leave`, `!ping`, `!transcript`, and `!search`.
+`/join` command), Resonode records the voice session and produces a
+speaker-attributed, timestamped text transcript. It also responds to slash
+commands such as `/leave`, `/ping`, `/transcript`, and `/search`.
 
 ## 2. Information we process
 
 - **Voice audio** — captured only while actively recording a voice channel
-  after an explicit `!join`. Audio is **transient**: it is written to temporary
+  after an explicit `/join`. Audio is **transient**: it is written to temporary
   per-speaker files only for the duration of transcription and then deleted
   automatically.
 - **Transcripts** — the text produced from voice audio, with timestamps.
 - **Discord identifiers** — user IDs, usernames/display names (used to attribute
   transcript lines to speakers), server (guild) IDs, and channel IDs.
-- **Command messages** — the content of command messages you send to the bot
-  (e.g., `!search launch date`).
+- **Command inputs** — the slash commands you run and any text you pass to them
+  (e.g., the words you give `/search`).
 
-Resonode does **not** intentionally collect message content from channels other
-than the commands directed at it, and does not collect payment information.
+Resonode uses **slash commands**, so it does **not** read general message
+content — it only receives the slash-command inputs directed at it, and does not
+collect payment information.
 
 ## 3. How information is processed
 

@@ -2,7 +2,7 @@
 
 A custom py-cord voice Sink routes each speaker's PCM into a per-speaker
 UtteranceChunker; finished utterances are handed to the bot's event loop for
-transcription as they complete, instead of waiting for !leave.
+transcription as they complete, instead of waiting for /leave.
 
 Threading: py-cord calls Sink.write() from its decode thread, so we never touch
 asyncio there — completed utterances are pushed to the loop via a thread-safe

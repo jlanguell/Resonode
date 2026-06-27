@@ -40,9 +40,9 @@ Storage  (sessions, utterances)  resonode/storage.py   ← SQLite → Postgres
 | `resonode/streaming.py` | `SpeakerStream` + `StreamingSink` — live per-speaker capture (Phase 2). |
 | `resonode/stt.py` | `BaseSTT`, `LocalWhisperSTT` (default), `DeepgramSTT` (stub), `get_stt()`. |
 | `resonode/services.py` | `BaseLLM` (None/OpenAI/Anthropic) + `BaseMemory` (keyword now, vector later). |
-| `resonode/cogs/recording.py` | `!join/!leave/!ping` → record → transcribe → persist → post (batch). |
-| `resonode/cogs/streaming.py` | Live `!join/!leave` (loaded when `RESONODE_STREAMING=true`). |
-| `resonode/cogs/query.py` | `!transcript/!search/!summary/!ask`. |
+| `resonode/cogs/recording.py` | `/join`, `/leave`, `/ping` → record → transcribe → persist → post (batch). |
+| `resonode/cogs/streaming.py` | Live `/join`, `/leave` (loaded when `RESONODE_STREAMING=true`). |
+| `resonode/cogs/query.py` | `/transcript`, `/search`, `/summary`, `/ask`. |
 | `resonode/bot.py` | Entrypoint: wires config + services + cogs, runs the bot. |
 | `bot.py` (root) | Thin launcher → `resonode.bot:main` (keeps `start.bat` working). |
 | `tests/test_core.py` | Sandbox unit tests (no Discord needed). |
@@ -51,12 +51,12 @@ Storage  (sessions, utterances)  resonode/storage.py   ← SQLite → Postgres
 
 | Command | Status | Notes |
 | --- | --- | --- |
-| `!join` / `!leave` | ✅ | Record a session; transcribe + persist + post. |
-| `!ping` | ✅ | Liveness. |
-| `!transcript` | ✅ | Re-post the latest session transcript. |
-| `!search <words>` | ✅ | Keyword search the server's voice history. |
-| `!summary` | ⚙️ | Needs an LLM configured (`RESONODE_LLM`). |
-| `!ask <question>` | ⚙️ | Keyword recall now; synthesized answers when an LLM is set. |
+| `/join` / `/leave` | ✅ | Record a session; transcribe + persist + post. |
+| `/ping` | ✅ | Liveness. |
+| `/transcript` | ✅ | Re-post the latest session transcript. |
+| `/search` | ✅ | Keyword search the server's voice history. |
+| `/summary` | ⚙️ | Needs an LLM configured (`RESONODE_LLM`). |
+| `/ask` | ⚙️ | Keyword recall now; synthesized answers when an LLM is set. |
 
 ## Roadmap
 
@@ -67,7 +67,7 @@ Storage  (sessions, utterances)  resonode/storage.py   ← SQLite → Postgres
   Enable with `RESONODE_STREAMING=true`. Pure logic is unit-tested; the live
   voice path needs a Discord token + test server to validate and tune (idle/VAD
   thresholds, py-cord `write()` data shape).
-- **Phase 3 — LLM features live.** Auto-summary on `!leave`, a live-translation
+- **Phase 3 — LLM features live.** Auto-summary on `/leave`, a live-translation
   channel, and voice-moderation alerts. Interfaces already exist.
 - **Phase 4 — Server brain (vector RAG).** Embeddings + pgvector/Qdrant behind
   `BaseMemory` (`VectorMemory`); cited answers; optional Mem0/Zep adapter.

@@ -1,17 +1,31 @@
-# Resonode
+<div align="center">
+
+<img src="assets/resonode/resonode_banner_680x240.png" alt="Resonode — Voice AI + Memory" width="680" />
 
 **Real-time voice AI + memory for Discord.**
+
+`Listens · Remembers · Acts`
+
+[![CI](https://github.com/jlanguell/resonode/actions/workflows/ci.yml/badge.svg)](https://github.com/jlanguell/resonode/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/python-3.11%2B-3776AB?logo=python&logoColor=white)
+![py-cord](https://img.shields.io/badge/py--cord-voice-5865F2?logo=discord&logoColor=white)
+![STT](https://img.shields.io/badge/STT-faster--whisper-00A67E)
+![License](https://img.shields.io/badge/license-AGPL--3.0-blue)
+![Status](https://img.shields.io/badge/status-building%20in%20public-orange)
+![Version](https://img.shields.io/badge/version-0.1.0-lightgrey)
+
+</div>
+
+---
 
 Resonode listens in your voice channels, turns speech into searchable text and
 action *as it happens*, and **remembers** it — a persistent "server brain" so
 your community never loses a decision, an action item, or who said what.
 
-> **Status — building in public.** The local transcription core works **today**
-> (join a voice channel, get a speaker-attributed transcript). The real-time and
-> memory features below are the roadmap, shipping incrementally. See
+> **Building in public.** The local transcription core works **today** — join a
+> voice channel, get a speaker-attributed transcript. The real-time and memory
+> features below are the roadmap, shipping incrementally. See
 > [Status & roadmap](#status--roadmap).
-
-`Listens · Remembers · Acts`
 
 ---
 
@@ -103,7 +117,7 @@ above is being built out toward streaming and memory.
 | `/leave` | Leaves, transcribes the session, and posts the transcript file. |
 | `/ping`  | Quick "is the bot alive?" check.                                |
 
-*(Captions, translate, and ask/recall commands arrive with the features above.)*
+*(Searchable history — `/transcript`, `/search`, `/summary`, `/ask` — comes online with the memory features; captions and translate follow.)*
 
 Each transcript line looks like:
 
@@ -179,7 +193,8 @@ Voice is sensitive, and a tool that records **and remembers** it raises the
 stakes. Only capture voice with everyone's knowledge and consent, follow your
 local laws on recording, and be clear with your community about what is stored
 and for how long. The current build keeps everything **local**; any hosted or
-memory features will ship with explicit, opt-in controls.
+memory features will ship with explicit, opt-in controls. See
+[PRIVACY_POLICY.md](PRIVACY_POLICY.md) and [TERMS_OF_SERVICE.md](TERMS_OF_SERVICE.md).
 
 - **One recording per server** at a time; re-running `/join` while already
   recording is ignored. Multiple servers at once is fine.
@@ -187,16 +202,30 @@ memory features will ship with explicit, opt-in controls.
 - Temporary per-speaker WAVs are written to `recordings/` during transcription
   and deleted automatically afterward.
 
-## Brand assets
+---
+
+## Brand
 
 Resonode's identity — the **voice-core + memory-constellation** mark — lives in
 `assets/resonode/`. Everything is 100% procedural and original (no stock art, no
-Discord logo), free to use and modify:
+Discord logo), free to use and modify.
+
+<div align="center">
+
+<img src="assets/resonode/resonode_banner.png" alt="Resonode — signal lattice" width="640" /><br/><sub>*Voice → memory → action — the signal lattice*</sub>
+
+<br/>
+
+<img src="assets/resonode/resonode_icon_neural.png" alt="neural" width="96" />&nbsp;&nbsp;
+<img src="assets/resonode/resonode_icon_plasma.png" alt="plasma" width="96" />&nbsp;&nbsp;
+<img src="assets/resonode/resonode_icon_teal.png" alt="teal·gold" width="96" />&nbsp;&nbsp;
+<img src="assets/resonode/resonode_icon_blurple.png" alt="blurple" width="96" /><br/><sub>*Four colourways — neural · plasma · teal·gold · blurple*</sub>
+
+</div>
 
 - `resonode_app_icon_1024.png` (+ `_512`) — bot **avatar** / app icon
 - `resonode_banner.png` (1600×900) — profile / **App Directory** banner
 - `resonode_banner_680x240.png` — compact banner
-- Four colourways — **neural** (default), **plasma**, **teal·gold**, **blurple** — for the icon and banners
 - `resonode_overview_concepts.png`, `resonode_overview_palettes.png` — selection boards
 - `RESONODE_visual_language.md` — the design system
 
@@ -212,11 +241,37 @@ Open-source core for reputation, plus a paid hosted tier. Distribute through the
 ## Project layout
 
 ```
-bot.py               # the bot — voice receive + transcription (Resonode core)
+bot.py               # thin launcher → resonode.bot:main
+resonode/            # the package — config, storage, STT/LLM/memory, cogs
 requirements.txt     # Python dependencies
 .env.example         # copy to .env and add your token
 start.bat            # convenience launcher (Windows)
 assets/resonode/     # Resonode brand kit (icons, banners, boards, design system)
+tests/               # sandbox unit tests (no Discord needed)
 transcripts/         # finished transcripts land here
 recordings/          # temp audio during transcription (auto-cleaned)
 ```
+
+## Contributing & security
+
+Contributions welcome — see [CONTRIBUTING.md](CONTRIBUTING.md). Found a
+vulnerability or a privacy concern? Please report it privately per
+[SECURITY.md](SECURITY.md) rather than opening a public issue.
+
+## License
+
+[AGPL-3.0](LICENSE) — you're free to use, modify, and self-host Resonode; if you
+run a modified version as a network service, you must share your changes under
+the same license.
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for what's changed between versions.
+
+---
+
+<div align="center">
+
+*Nothing said out loud has to be lost again.*
+
+</div>

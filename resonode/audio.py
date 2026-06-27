@@ -2,7 +2,7 @@
 
 Discord delivers 48 kHz, 16-bit, stereo PCM per speaker. This buffers one
 speaker's PCM and emits a complete 'utterance' when it detects a pause, so each
-utterance can be transcribed as it finishes instead of waiting for !leave.
+utterance can be transcribed as it finishes instead of waiting for /leave.
 Energy(RMS)-based VAD via numpy (no native deps).
 """
 from __future__ import annotations

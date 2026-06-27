@@ -1,7 +1,7 @@
 """Live transcription cog — /join, /leave that stream lines as people speak.
 
 Loaded instead of RecordingCog when RESONODE_STREAMING=true. Each finished
-utterance is transcribed and posted live, and persisted so !search/!ask work on
+utterance is transcribed and posted live, and persisted so /search and /ask work on
 streamed sessions too. A full transcript file is posted when the session ends.
 """
 from __future__ import annotations
