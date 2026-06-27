@@ -1,0 +1,91 @@
+# Resonode — Build Plan & Architecture
+
+**Status: Phase 1 (foundation) implemented.** This is the map from today's local
+transcription core to the full real-time voice + memory platform in the README.
+
+## Design principles
+
+- **Local-first & private by default.** Cloud / paid backends are opt-in.
+- **Everything pluggable** behind one interface — STT, LLM, memory, storage.
+- **SQLite now → Postgres + pgvector** for the hosted tier, behind the same
+  `Storage` API. Cogs never call a vendor SDK directly; they call interfaces.
+
+## Architecture
+
+```
+Discord voice receive
+        │  live audio, per speaker
+        ▼
+UtteranceChunker (VAD)        resonode/audio.py     ← batch → streaming seam
+        │  utterance buffers
+        ▼
+STT  (LocalWhisper | Deepgram)   resonode/stt.py
+        │  Segments (text + timestamps)
+        ▼
+Storage  (sessions, utterances)  resonode/storage.py   ← SQLite → Postgres
+        │
+        ├─► Transcripts / search           cogs/query.py
+        ├─► LLM: summarize/translate/mod    resonode/services.py
+        └─► Memory: recall (RAG)            resonode/services.py
+```
+
+### Module map
+
+| File | Responsibility |
+| --- | --- |
+| `resonode/config.py` | Env-driven config; local-first defaults. |
+| `resonode/storage.py` | Sessions, utterances, per-guild settings (SQLite; Postgres-ready API). |
+| `resonode/transcripts.py` | Timestamp + transcript formatting (pure). |
+| `resonode/audio.py` | `UtteranceChunker` — RMS/VAD segmentation; the streaming seam. |
+| `resonode/streaming.py` | `SpeakerStream` + `StreamingSink` — live per-speaker capture (Phase 2). |
+| `resonode/stt.py` | `BaseSTT`, `LocalWhisperSTT` (default), `DeepgramSTT` (stub), `get_stt()`. |
+| `resonode/services.py` | `BaseLLM` (None/OpenAI/Anthropic) + `BaseMemory` (keyword now, vector later). |
+| `resonode/cogs/recording.py` | `!join/!leave/!ping` → record → transcribe → persist → post (batch). |
+| `resonode/cogs/streaming.py` | Live `!join/!leave` (loaded when `RESONODE_STREAMING=true`). |
+| `resonode/cogs/query.py` | `!transcript/!search/!summary/!ask`. |
+| `resonode/bot.py` | Entrypoint: wires config + services + cogs, runs the bot. |
+| `bot.py` (root) | Thin launcher → `resonode.bot:main` (keeps `start.bat` working). |
+| `tests/test_core.py` | Sandbox unit tests (no Discord needed). |
+
+## Commands
+
+| Command | Status | Notes |
+| --- | --- | --- |
+| `!join` / `!leave` | ✅ | Record a session; transcribe + persist + post. |
+| `!ping` | ✅ | Liveness. |
+| `!transcript` | ✅ | Re-post the latest session transcript. |
+| `!search <words>` | ✅ | Keyword search the server's voice history. |
+| `!summary` | ⚙️ | Needs an LLM configured (`RESONODE_LLM`). |
+| `!ask <question>` | ⚙️ | Keyword recall now; synthesized answers when an LLM is set. |
+
+## Roadmap
+
+- **Phase 1 — Foundation (DONE).** Package, config, storage, pluggable
+  STT/LLM/memory seams, ported recording, search/ask over history, unit tests.
+- **Phase 2 — Real-time streaming (PROTOTYPE — built).** Custom voice sink →
+  `UtteranceChunker` → STT per finished utterance → live transcript lines.
+  Enable with `RESONODE_STREAMING=true`. Pure logic is unit-tested; the live
+  voice path needs a Discord token + test server to validate and tune (idle/VAD
+  thresholds, py-cord `write()` data shape).
+- **Phase 3 — LLM features live.** Auto-summary on `!leave`, a live-translation
+  channel, and voice-moderation alerts. Interfaces already exist.
+- **Phase 4 — Server brain (vector RAG).** Embeddings + pgvector/Qdrant behind
+  `BaseMemory` (`VectorMemory`); cited answers; optional Mem0/Zep adapter.
+  `KeywordMemory` is the working v0.
+- **Phase 5 — Hosting & scale.** Always-on host, Postgres, per-guild
+  concurrency, GPU Whisper or Deepgram for the low-latency tier.
+- **Phase 6 — Monetize.** Discord App Directory + Premium Apps subscription /
+  entitlement checks (or license keys); tier flags live in `guild_settings`.
+
+## How to extend
+
+- **New STT backend:** subclass `BaseSTT`, return it from `get_stt()`.
+- **New LLM provider:** subclass `_ChatLLM`, add to `get_llm()`.
+- **Vector memory:** implement `VectorMemory(BaseMemory)` with embeddings; switch
+  `get_memory()` on `config.memory_backend == "vector"`.
+
+## Testing
+
+`python tests/test_core.py` covers config, storage, transcripts, the chunker,
+and the STT/LLM/memory factories — no Discord required. The live voice paths
+need a Discord token and a test server.
